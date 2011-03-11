@@ -658,7 +658,8 @@ module SimpleRecord
     # options:
     #   :s3_bucket => :old/:new/"#{any_bucket_name}". :new if want to use new bucket. Defaults to :old for backwards compatability.
     def s3_bucket(create=false, options={})
-      s3.bucket(s3_bucket_name(options[:s3_bucket]), create)
+      headers = SimpleRecord.options[:s3_bucket_headers] || {}
+      s3.bucket(s3_bucket_name(options[:s3_bucket]), create, nil, headers)
     end
 
     def s3_bucket_name(s3_bucket_option=:old)

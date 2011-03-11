@@ -184,6 +184,11 @@ For rails, be sure to add this to your Application controller if using per_threa
 NOTE: All projects should set this as we may make this default in a future major version (v3?). Existing projects should use
 :s3_bucket=>:
 
+If you need to use EU buckets, then add the following to establish_connection (replace my-bucket with the name of your bucket):
+
+   :s3_bucket => "my-bucket@s3.amazonaws.com",
+   :s3_bucket_headers => {:location => "eu"}
+
 ### Created and Updated At Columns
 
 The default uses the columns "created" and "updated" which unfortunately are not the same as ActiveRecord, which
