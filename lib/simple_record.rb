@@ -57,6 +57,7 @@ module SimpleRecord
   @@s3            = nil
   @@auto_close_s3 = false
   @@logger        = Logger.new(STDOUT)
+  @@options[:logger] = @@logger
   @@logger.level  = Logger::INFO
 
   class << self;
@@ -123,7 +124,7 @@ module SimpleRecord
     #                                                  :single (one thread across entire app)
     #                                                  :per_thread (one connection per thread)
     #                                                  :pool (uses a connection pool with a maximum number of connections - NOT IMPLEMENTED YET)
-    #      :logger       => Logger Object        # Logger instance: logs to STDOUT if omitted
+    #      :logger       => Logger Object        # Logger instance: (Defaults to using same logging instance as SimpleRecord (STDOUT))
     def establish_connection(aws_access_key=nil, aws_secret_key=nil, options={})
       @aws_access_key = aws_access_key
       @aws_secret_key = aws_secret_key
@@ -174,6 +175,9 @@ module SimpleRecord
 
   class Base < SimpleRecord::ActiveSdb::Base
 
+    def logger
+      SimpleRecord.logger
+    end
 
 #        puts 'Is ActiveModel defined? ' + defined?(ActiveModel).inspect
 
@@ -445,7 +449,7 @@ module SimpleRecord
     #
 
     def save(options={})
-      puts 'SAVING: ' + self.inspect if SimpleRecord.logging?
+      logger.debug 'SAVING: ' + self.inspect
       # todo: Clean out undefined values in @attributes (in case someone set the attributes hash with values that they hadn't defined)
       clear_errors
       # todo: decide whether this should go before pre_save or after pre_save? pre_save dirties "updated" and perhaps other items due to callbacks
@@ -511,7 +515,7 @@ module SimpleRecord
     end
 
     def create(options) #:nodoc:
-      puts '3 create'
+      logger.debug '3 create'
       ret = true
       _run_create_callbacks do
         x   = do_actual_save(options)
@@ -523,7 +527,7 @@ module SimpleRecord
 
 #
     def update(options) #:nodoc:
-      puts '3 update'
+      logger.debug '3 update'
       ret = true
       _run_update_callbacks do
         x   = do_actual_save(options)
@@ -600,7 +604,7 @@ module SimpleRecord
           # all clobs in one chunk
           # using json for now, could change later
           val = all_clobs.to_json
-          puts 'val=' + val.inspect
+          logger.debug 'val=' + val.inspect
           put_lob(single_clob_id, val, :s3_bucket=>:new)
         else
           dirty_clobs.each_pair do |k, val|
@@ -711,7 +715,7 @@ module SimpleRecord
 #      validate()
 #      is_create ? validate_on_create : validate_on_update
       if !valid?
-        puts 'not valid'
+        logger.warn puts 'not valid'
         return false
       end
 #
