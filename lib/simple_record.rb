@@ -635,7 +635,7 @@ module SimpleRecord
     def put_lob(k, val, options={})
       begin
         s3_bucket(false, options).put(k, val)
-      rescue Aws::AwsError => ex
+      rescue RightAws::AwsError => ex
         if ex.include? /NoSuchBucket/
           s3_bucket(true, options).put(k, val)
         else
