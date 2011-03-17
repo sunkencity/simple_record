@@ -60,7 +60,7 @@ module SimpleRecord
   @@auto_close_s3 = false
   @@logger        = Logger.new(STDOUT)
   @@options[:logger] = @@logger
-  @@logger.level  = Logger::WARN
+  @@logger.level  = Logger::ERROR
 
   class << self;
     attr_accessor :aws_access_key, :aws_secret_key
