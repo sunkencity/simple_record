@@ -624,7 +624,7 @@ module SimpleRecord
             SimpleRecord.stats.s3_deletes += 1
             return
           else
-            s3_bucket.delete_key(s3_lob_id(k))
+            s3_bucket.key(s3_lob_id(k)).delete
             SimpleRecord.stats.s3_deletes += 1
           end
         end
