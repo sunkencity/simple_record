@@ -138,6 +138,7 @@ module SimpleRecord
         # todo: should we init this only when needed?
       end
       s3_ops = {:connection_mode=>options[:connection_mode] || :default}
+			s3_ops[:logger] = @@logger
       @@s3   = RightAws::S3.new(SimpleRecord.aws_access_key, SimpleRecord.aws_secret_key, s3_ops)
 
       if options[:created_col]
