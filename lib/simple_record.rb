@@ -157,7 +157,6 @@ module SimpleRecord
     # an after_filter for each request.
     def close_connection()
       SimpleRecord::ActiveSdb.close_connection
-      @@s3.close_connection 
     end
 
     # If you'd like to specify the s3 connection to use for LOBs, you can pass it in here.
