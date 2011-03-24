@@ -137,8 +137,9 @@ module SimpleRecord
         @@auto_close_s3 = true
         # todo: should we init this only when needed?
       end
-      s3_ops = {:connection_mode=>options[:connection_mode] || :default}
+      s3_ops = {}
 			s3_ops[:logger] = @@logger
+			s3_ops[:multi_thread] = true if options[:connection_mode] == :per_thread
       @@s3   = RightAws::S3.new(SimpleRecord.aws_access_key, SimpleRecord.aws_secret_key, s3_ops)
 
       if options[:created_col]
