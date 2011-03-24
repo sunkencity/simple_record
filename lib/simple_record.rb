@@ -57,6 +57,7 @@ module SimpleRecord
   @@stats         = SimpleRecord::Stats.new
   @@logging       = false
   @@s3            = nil
+	@@s3_ops        = {}
   @@auto_close_s3 = false
   @@logger        = Logger.new(STDOUT)
   @@options[:logger] = @@logger
@@ -137,10 +138,9 @@ module SimpleRecord
         @@auto_close_s3 = true
         # todo: should we init this only when needed?
       end
-      s3_ops = {}
-			s3_ops[:logger] = @@logger
-			s3_ops[:multi_thread] = true if options[:connection_mode] == :per_thread
-      @@s3   = RightAws::S3.new(SimpleRecord.aws_access_key, SimpleRecord.aws_secret_key, s3_ops)
+			@@s3_ops[:logger] = @@logger
+			@@s3_ops[:multi_thread] = true if options[:connection_mode] == :per_thread
+      @@s3   = RightAws::S3.new(SimpleRecord.aws_access_key, SimpleRecord.aws_secret_key, @@s3_ops)
 
       if options[:created_col]
         SimpleRecord::Base.has_dates options[:created_col]
@@ -170,6 +170,10 @@ module SimpleRecord
     def s3
       @@s3
     end
+
+		def s3_ops
+			@@s3_ops
+	  end
 
     def options
       @@options
@@ -660,7 +664,9 @@ module SimpleRecord
       return SimpleRecord.s3 if SimpleRecord.s3
       # todo: should optimize this somehow, like use the same connection_mode as used in SR
       # or keep open while looping in ResultsArray.
-      RightAws::S3.new(SimpleRecord.aws_access_key, SimpleRecord.aws_secret_key)
+
+			# Hm... so how do we actually get the right variables here anyway...?
+      RightAws::S3.new(SimpleRecord.aws_access_key, SimpleRecord.aws_secret_key, SimpleRecord.s3_ops)
     end
 
     # options:
